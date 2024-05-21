@@ -20,7 +20,7 @@ interface RootLayoutProps {
 const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <JobsProvider>
           <Navbar />
           <main>{children}</main>

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 import { useRouter } from 'next/navigation'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Job } from '@/app/lib/interfaces/JobInterface';
 
@@ -11,63 +11,79 @@ interface DetailsFormProps {
   id?: number | null;
 }
 
-const DetailsForm: React.FC<DetailsFormProps> = ({ jobSubmit, serviceTitle, job = null, id = null }) => {
-  const [titleMain, setTitleMain] = useState<string>(job?.title ?? '');
-  const [type, setType] = useState<{id: number, title: string}>(job?.type ?? { id: 1, title: 'Full-Time' });
-  const [location, setLocation] = useState<string>(job?.location ?? '');
-  const [description, setDescription] = useState<string>(job?.description ?? '');
-  const [salary, setSalary] = useState<string>(job?.salary ?? 'Under $50K');
-  const [companyName, setCompanyName] = useState<string>(job?.company?.name ?? '');
-  const [companyDescription, setCompanyDescription] = useState<string>(job?.company?.description ?? '');
-  const [contactEmail, setContactEmail] = useState<string>(job?.company?.email ?? '');
-  const [contactPhone, setContactPhone] = useState<string>(job?.company?.phone ?? '');
+const DetailsForm: React.FC<DetailsFormProps> = ({ jobSubmit, serviceTitle, job = null, id = null }) => {  
+    const [titleMain, setTitleMain] = useState<string>(job?.title ?? '');
+    const [type, setType] = useState<{id: number, title: string}>(job?.type ?? { id: 1, title: 'Full-Time' });
+    const [location, setLocation] = useState<string>(job?.location ?? '');
+    const [description, setDescription] = useState<string>(job?.description ?? '');
+    const [salary, setSalary] = useState<string>(job?.salary ?? 'Under $50K');
+    const [companyName, setCompanyName] = useState<string>(job?.company?.name ?? '');
+    const [companyId, setCompanyId] = useState<number|null>(job?.company?.id ?? null);
+    const [companyDescription, setCompanyDescription] = useState<string>(job?.company?.description ?? '');
+    const [contactEmail, setContactEmail] = useState<string>(job?.company?.email ?? '');
+    const [contactPhone, setContactPhone] = useState<string>(job?.company?.phone ?? '');
+    
+    const router = useRouter();
+    
+    const jobTypes = [
+        'Full-Time',
+        'Part-Time',
+        'Remote',
+        'Internship'
+    ];
 
-  const router = useRouter();
+    const salaries = [
+        'Under $50K',
+        '$50K - $60K',
+        '$60K - $70K',
+        '$70K - 80K',
+        '$80K - 90K',
+        '$90K - 100K',
+        '$100K - $125K',
+        '$125K - $150K',
+        '$150K - $175K',
+        '$175K - $200K',
+        'Over $200K'
+    ];
 
-  const jobTypes = [
-    'Full-Time',
-    'Part-Time',
-    'Remote',
-    'Internship'
-  ];
+    useEffect(() => { 
+        setTitleMain(job?.title ?? '');
+        setType(job?.type ?? { id: 1, title: 'Full-Time' });
+        setLocation(job?.location ?? '');
+        setDescription(job?.description ?? '');
+        setSalary(job?.salary ?? 'Under $50K');
+        setCompanyName(job?.company?.name ?? '');
+        setCompanyId(job?.company?.id ?? null);
+        setCompanyDescription(job?.company?.description ?? '');
+        setContactEmail(job?.company?.email ?? '');
+        setContactPhone(job?.company?.phone ?? '');
+    }, [job]);
+    
+    
+    const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-  const salaries = [
-    'Under $50K',
-    '$50K - $60K',
-    '$60K - $70K',
-    '$70K - 80K',
-    '$80K - 90K',
-    '$90K - 100K',
-    '$100K - $125K',
-    '$125K - $150K',
-    '$150K - $175K',
-    '$175K - $200K',
-    'Over $200K'
-  ];
+        const jobObject: Job = {
+            title: titleMain,
+            type,
+            location,
+            description,
+            salary,
+            company: {
+                name: companyName,
+                description: companyDescription,
+                email: contactEmail,
+                phone: contactPhone,
+            },
+        };
 
-  const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+        if (id) { jobObject.id = id }
+        if(companyId) {jobObject.company.id = companyId}
+        jobSubmit(jobObject);
 
-    const jobObject: Job = {
-      title: titleMain,
-      type,
-      location,
-      description,
-      salary,
-      company: {
-        name: companyName,
-        description: companyDescription,
-        email: contactEmail,
-        phone: contactPhone,
-      },
-    };
+        toast.success('Job Updated Successfully');
 
-    if (id) { jobObject.id = id }
-    jobSubmit(jobObject);
-
-    toast.success('Job Updated Successfully');
-
-    return id == null ? router.push(`/jobs`) : router.push(`/jobs/${id}`);
+        return id == null ? router.push(`/jobs`) : router.push(`/jobs/read/${id}`);
   };
 
     return (
