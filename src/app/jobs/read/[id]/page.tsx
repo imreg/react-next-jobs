@@ -2,18 +2,18 @@
 import Link from "next/link";
 import { FaArrowLeft, FaMapMarker } from "react-icons/fa";
 import { useRouter, useParams } from 'next/navigation'
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import JobService from '@/app/lib/JobService';
-import { JobsContext } from '@/app/context/JobsContext';
 import { Job } from '@/app/lib/interfaces/JobInterface';
 import Spinner from '@/app/components/Spinners';
+import { useAppSelector } from '@/app/lib/store/hooks';
 
 const JobDetailsPage: React.FC = () => {
     const router = useRouter();
     const { id } = useParams();
-    const { jobs } = useContext(JobsContext);
     const [job, setJob] = useState<Job | undefined>();
     const [loading, setLoading] = useState<boolean>(true);
+    const jobs = useAppSelector((state) => state.job.jobs);
 
     useEffect(() => {
         if (id && jobs.length > 0) {

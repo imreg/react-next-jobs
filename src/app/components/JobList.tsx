@@ -1,27 +1,28 @@
 'use client';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import JobListing from './JobListing';
 import Spinner from './Spinners';
 import JobService from '@/app/lib/JobService';
-import { JobsContext } from '@/app/context/JobsContext';
-
+import { useAppDispatch, useAppSelector } from '@/app/lib/store/hooks';
+import { setJobs } from '@/app/lib/store/jobSlice';
 
 interface JobListProps {
   isHome?: boolean;
 }
 
 const JobList: React.FC<JobListProps> = ({ isHome = false }) => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const { jobs, setJobs } = useContext(JobsContext);
+  const [loading, setLoading] = useState<boolean>(true);  
+  const jobs = useAppSelector((state) => state.job.jobs);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const param = isHome ? '?_limit=3' : '';
+    const param = isHome ? '?limit=3' : '';
     const jobService = new JobService();
 
     const fetchJobs = async () => {
       try {
         const data = await jobService.getAllJobs(param);
-        setJobs(data);
+        dispatch(setJobs(data));
       } catch (error) {
         console.log('Error', error);
       } finally {
@@ -30,7 +31,7 @@ const JobList: React.FC<JobListProps> = ({ isHome = false }) => {
     };
 
     fetchJobs();
-  }, [isHome]);
+  }, [isHome, dispatch]);
 
   return (
     <section className="bg-blue-50 px-4 py-10">

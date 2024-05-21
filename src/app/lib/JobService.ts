@@ -28,7 +28,7 @@ export default class JobService {
       throw new Error('Job ID is required for updating a job');
     }
 
-    await fetch(`${this.apiUrl}/jobs/${job.id}`, {
+    await fetch(`http://localhost:8080/api/jobs/${job.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
