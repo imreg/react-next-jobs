@@ -22,7 +22,6 @@ const JobList: React.FC<JobListProps> = ({ isHome = false }) => {
     const fetchJobs = async () => {
       try {
         const data = await jobService.getAllJobs(param);
-        setJobs(data);
         dispatch(setJobs(data));
       } catch (error) {
         console.log('Error', error);

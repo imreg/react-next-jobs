@@ -83,7 +83,7 @@ const DetailsForm: React.FC<DetailsFormProps> = ({ jobSubmit, serviceTitle, job 
 
         toast.success('Job Updated Successfully');
 
-        return id == null ? router.push(`/jobs`) : router.push(`/jobs/read/${id}`);
+        return router.push(`/jobs`);
   };
 
     return (

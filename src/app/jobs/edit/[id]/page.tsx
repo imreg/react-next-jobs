@@ -1,24 +1,34 @@
 'use client';
-import { useRouter, useParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react';
 import DetailsForm from '@/app/components/DetailsForm';
 import JobService from '@/app/lib/JobService';
 import { Job } from '@/app/lib/interfaces/JobInterface';
-import { useAppSelector } from '@/app/lib/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/app/lib/store/hooks';
+import { setJobs } from '@/app/lib/store/jobSlice';
 
-interface EditJobPageProps {
-  updateJobSubmit: (job: any) => void;
-}
-
-const EditJobPage: React.FC<EditJobPageProps> = ({ updateJobSubmit }) => {
-    const router = useRouter();  
+const EditJobPage: React.FC<{}> = () => {
     const jobs = useAppSelector((state) => state.job.jobs);
+    const dispatch = useAppDispatch();
     const { id } = useParams();
-    const [job, setJob] = useState<Job | undefined>();
-    const jobService = new JobService();    
+    const [job, setJob] = useState<Job | undefined>();    
+    const jobService = new JobService();
+
     useEffect(() => {
         const selectedJob = jobs.find((job) => job.id === Number(id));
         setJob(selectedJob);
+
+        if (jobs.length === 0 && typeof id === 'string') {            
+            const fetchJobs = async () => {
+                try {
+                    const data = await jobService.getJobById(parseInt(id));
+                    dispatch(setJobs([data]));
+                } catch (error) {
+                    console.log('Error', error);
+                }
+            };
+            fetchJobs();
+        }
     }, [id, job, jobs]);
 
     return (
