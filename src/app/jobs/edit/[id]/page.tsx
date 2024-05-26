@@ -1,6 +1,6 @@
 'use client';
 import { useParams } from 'next/navigation'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import DetailsForm from '@/app/components/DetailsForm';
 import JobService from '@/app/lib/JobService';
 import { Job } from '@/app/lib/interfaces/JobInterface';
@@ -12,7 +12,9 @@ const EditJobPage: React.FC<{}> = () => {
     const dispatch = useAppDispatch();
     const { id } = useParams();
     const [job, setJob] = useState<Job | undefined>();    
-    const jobService = new JobService();
+    const jobService = useMemo(() => {
+        return new JobService();
+    }, []);
 
     useEffect(() => {
         const selectedJob = jobs.find((job) => job.id === Number(id));
@@ -29,7 +31,7 @@ const EditJobPage: React.FC<{}> = () => {
             };
             fetchJobs();
         }
-    }, [id, job, jobs]);
+    }, [dispatch, id, job, jobService, jobs]);
 
     return (
         <section className='bg-indigo-50'>
