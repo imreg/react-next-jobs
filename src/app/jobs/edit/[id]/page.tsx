@@ -10,7 +10,8 @@ import { setJobs } from '@/app/lib/store/jobSlice';
 const EditJobPage: React.FC<{}> = () => {
     const jobs = useAppSelector((state) => state.job.jobs);
     const dispatch = useAppDispatch();
-    const { id } = useParams();
+    const params = useParams();
+    const id = parseInt(Array.isArray(params.id) ? params.id[0] : params.id);
     const [job, setJob] = useState<Job | undefined>();    
     const jobService = useMemo(() => {
         return new JobService();
@@ -23,7 +24,7 @@ const EditJobPage: React.FC<{}> = () => {
         if (jobs.length === 0 && typeof id === 'string') {            
             const fetchJobs = async () => {
                 try {
-                    const data = await jobService.getJobById(parseInt(id));
+                    const data = await jobService.getJobById(id);
                     dispatch(setJobs([data]));
                 } catch (error) {
                     console.log('Error', error);
